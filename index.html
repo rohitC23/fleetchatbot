@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot Popup</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header-container">
+    <div class="trial-banner"></div>
+    <nav>
+        <div class="logo-container">
+          <img class="logo" src="images/fleet.png" alt="logo">
+        </div>
+    </nav>
+  </header>
+
+    <div id="dashboard" style="display: none;"></div>
+
+    <div class="floating-icon" onclick="toggleChatBot()">
+      <img id="chat-icon" src="images/live-chat.png" alt="Chat Icon">
+      <img id="close-icon" src="images/cross.png" alt="Close Icon" style="display: none;">
+    </div>
+
+    <div class="chat-popup" id="chatPopup">
+        <div class="chat-header">
+          <img id="avatar" src="images/avatar.png" alt="Avatar">
+          <div id="title">
+            <h3 id="chat-title">Fleet AI Assistant</h3>
+            <p class="status"><span class="green-dot"></span>  Online</p>
+          </div>
+        </div>
+        
+        <div id="chatbox"></div>
+        <div id="user-input-container">
+          <input type="text" id="user-input" placeholder="Ask me anything...">
+          <button id="send-btn">&#9658;</button>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

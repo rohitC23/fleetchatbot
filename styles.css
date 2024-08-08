@@ -1,6 +1,8 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 0px;
+  font-family: Poppins, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 .header-container{
@@ -10,7 +12,8 @@ body {
 .trial-banner {
   background-color: #607AD6;
   color: white;
-  padding: 15px;
+  padding: 15px;  
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.3);
 }
 
 nav {
@@ -20,6 +23,7 @@ nav {
   align-items: center;
   padding: 20px;
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.3);
+  width: 100%;
 }
 
 img{
@@ -55,6 +59,9 @@ nav .logo {
   width: 25px;
 }
 
+#login-title{
+  font-weight: 500;
+}
 
 .chat-popup {
   position: fixed;
@@ -223,7 +230,7 @@ nav .logo {
 }
 
 /* Suggestions container */
-.suggestions {
+.suggestions {  
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -232,6 +239,7 @@ nav .logo {
 
 /* Suggestion button styles */
 .suggestion {
+  font-family: Poppins, sans-serif;
   background-color: #ffffff;
   border: 1px solid #d1d1d1;
   border-radius: 5px;
@@ -249,4 +257,187 @@ nav .logo {
 .suggestion:hover {
   background-color: #f1f1f1;
   border-color: #a1a1a1;
+}
+
+/* profile dropdown */
+
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: auto; /* Pushes the dropdown to the right */
+}
+
+.profile-dropdown img.profile-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.profile-dropdown span {
+  vertical-align: middle;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.profile-dropdown .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  right: 0; /* Aligns the dropdown to the right edge */
+}
+
+.profile-dropdown .dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.profile-dropdown .dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.profile-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+#logout-btn {  
+  border: none;
+  background: none;
+  padding: 0px;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: Poppins, sans-serif;
+}
+
+#login-container {  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  padding: 25px;
+  background-color: #fff;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#login-btn {
+  background-color: #4D5FD1;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  margin: 20px 0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+#logo-login {
+  width: 65%;
+  height: auto;
+  margin: 25px;
+}
+#login-container input, #login-container button {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid grey;
+}
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+.dot {
+  height: 8px;
+  width: 8px;
+  margin: 0 4px;
+  background-color: #007bff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: loading 1.4s infinite ease-in-out both;
+}
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(3) { animation-delay: 0s; }
+@keyframes loading {
+  0%, 80%, 100% {
+	transform: scale(0);
+  }
+  40% {
+	transform: scale(1);
+  }
+}
+
+.spinner {
+  display: none;
+  width: 18px; /* Reduced size */
+  height: 18px; /* Reduced size */
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Style for the login button with spinner */
+#login-btn {
+  position: relative;
+}
+
+#login-btn.loading .spinner {
+  display: inline-block;
+}
+
+.btn-text{
+  font-size: 16px;
+}
+
+#login-btn.loading .btn-text {
+  visibility: hidden;
+}
+
+#error-message {
+  color: red;
+  height: 20px; /* Adjust based on your design */
+  margin-top: 10px; /* Adjust based on your design */
+  font-weight: bold;
+}
+
+label {
+  align-self: flex-start;
+  margin: 5px 0;
+  color: #333;
+}
+
+input {
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid grey;
 }

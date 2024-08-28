@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatBot Popup</title>
+    <title>FleetEnable | RAG</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="header-container">
+  <header class="header-container" style="display: none;" id="header-div">
     <div class="trial-banner"></div>
     <nav>
         <div class="logo-container">
@@ -16,9 +17,25 @@
     </nav>
   </header>
 
+    <div id="login-container" style="display: none;">
+      <img id="logo-login" src="images/logo.png" alt="logo">
+      <h2 id="login-title">Login</h2>
+      <label for="username">UserName:</label>
+      <input type="text" id="username" placeholder="Enter Username" />
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Enter Password">
+      <button id="login-btn">
+        <span class="btn-text">Submit</span>
+        <div class="spinner"></div>
+      </button>
+      <div>
+        <p id="error-message" ></p>
+      </div>
+    </div>
+
     <div id="dashboard" style="display: none;"></div>
 
-    <div class="floating-icon" onclick="toggleChatBot()">
+    <div class="floating-icon" style="display: none;" id="float-icon" onclick="toggleChatBot()">
       <img id="chat-icon" src="images/live-chat.png" alt="Chat Icon">
       <img id="close-icon" src="images/cross.png" alt="Close Icon" style="display: none;">
     </div>
@@ -30,6 +47,18 @@
             <h3 id="chat-title">Fleet AI Assistant</h3>
             <p class="status"><span class="green-dot"></span>  Online</p>
           </div>
+
+          <!-- New user profile dropdown -->
+          <div class="profile-dropdown">
+            <img src="images/user.png" alt="Avatar" class="profile-avatar">
+            <!-- <span>&#x2BC6;</span> -->
+            <div class="dropdown-content">
+              <a ><button id="add-user">Add User</button></a>
+              <a href="#">Profile</a>
+              <a ><button id="logout-btn">Logout</button></a>
+            </div>
+          </div>
+
         </div>
         
         <div id="chatbox"></div>
@@ -37,7 +66,15 @@
           <input type="text" id="user-input" placeholder="Ask me anything...">
           <button id="send-btn">&#9658;</button>
         </div>
+
+        <div id="add-user-section" style="display: none;">
+          <h2>User Registration</h2>
+          <input type="text" id="new-username" placeholder="Enter Username">
+          <input type="text" id="new-email" placeholder="Enter Email">
+          <button id="create-user">Create User</button>
+        </div >
     </div>
+    
     <script type="module" src="script.js"></script>
 </body>
 </html>

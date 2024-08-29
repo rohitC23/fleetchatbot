@@ -316,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         idPara.appendChild(idLink);
         messageElem.appendChild(idPara);
-
+    
         chatbox.appendChild(messageElem);
     
         // Display interactive suggestions if they exist
@@ -333,27 +333,24 @@ document.addEventListener("DOMContentLoaded", () => {
             suggestionElem.classList.add("suggestion");
             suggestionElem.textContent = suggestion;
     
-            // Add click event to populate input and send the message
+            // Add click event to populate input, send the message, and remove suggestions
             suggestionElem.addEventListener("click", () => {
               document.getElementById("user-input").value = suggestion;
               sendMessage();
-              hideGreetingAndSuggestions(); // Hide suggestions after user clicks on a suggestion
+              chatbox.removeChild(suggestionContainer); // Remove the suggestion container after click
             });
     
             suggestionContainer.appendChild(suggestionElem);
           });
     
-          //messageElem.appendChild(suggestionContainer);
           chatbox.appendChild(suggestionContainer);
         }
       }
     
-      // Append the message container to the chatbox
-      //chatbox.appendChild(messageElem);
-    
       // Scroll to the bottom of the chatbox
       chatbox.scrollTop = chatbox.scrollHeight;
     }
+    
        
     
     function showLoadingDots() {
@@ -415,36 +412,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Show the add user section
       document.getElementById('add-user-section').style.display = 'block';
-  });
+    });
 
-  document.getElementById('create-user').addEventListener('click', function() {
-    const username = document.getElementById('new-username').value.trim();
-    const email = document.getElementById('new-email').value.trim();
-    const messageElement = document.getElementById('message');
-
-    if (username === "" || email === "") {
-        // Display an error message if inputs are empty
-        messageElement.textContent = "Please enter both username and email.";
-        messageElement.style.color = "red";
-    } else {
-      // Display success message
-      messageElement.textContent = "User created successfully.";
-      messageElement.style.color = "blue";
-
-      // After a short delay, hide the add user section and show chat elements
-      setTimeout(function() {
-          document.getElementById('add-user-section').style.display = 'none';
-          document.querySelector('.chat-header').style.display = 'flex';
-          document.getElementById('chatbox').style.display = 'block';
-          document.getElementById('user-input-container').style.display = 'flex';
-
-          // Clear the input fields and message
-          document.getElementById('new-username').value = "";
-          document.getElementById('new-email').value = "";
-          messageElement.textContent = "";
-      }, 1000); // Adjust the delay time as needed
-    }
-  });
+    document.getElementById('create-user').addEventListener('click', function() {
+      const username = document.getElementById('new-username').value.trim();
+      const email = document.getElementById('new-email').value.trim();
+      const id = document.getElementById('new-id').value.trim();
+      const messageElement = document.getElementById('message');
+  
+      if (username === "" || email === "" || id === "") {
+          // Display an error message if inputs are empty
+          messageElement.textContent = "Please enter both username and email.";
+          messageElement.style.color = "red";
+      } else {
+          const loggedInUser = localStorage.getItem("loggedInUser");
+          const userPassword = localStorage.getItem("userPassword");
+          // Send a POST request with the entered values
+          fetch('http://127.0.0.1:8000/add_user', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  username: loggedInUser,
+                  password: userPassword,
+                  sub_user: username,
+                  sub_password: email,
+                  sub_id: id
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Display success message
+              messageElement.textContent = "User created successfully.";
+              messageElement.style.color = "blue";
+  
+              // After a short delay, hide the add user section and show chat elements
+              setTimeout(function() {
+                  document.getElementById('add-user-section').style.display = 'none';
+                  document.querySelector('.chat-header').style.display = 'flex';
+                  document.getElementById('chatbox').style.display = 'block';
+                  document.getElementById('user-input-container').style.display = 'flex';
+  
+                  // Clear the input fields and message
+                  document.getElementById('new-username').value = "";
+                  document.getElementById('new-email').value = "";
+                  document.getElementById('new-id').value = "";
+                  messageElement.textContent = "";
+              }, 1000); // Adjust the delay time as needed
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              messageElement.textContent = "Failed to create user.";
+              messageElement.style.color = "red";
+          });
+      }
+    });
+  
 
 
     logoutBtn.addEventListener("click", () => {

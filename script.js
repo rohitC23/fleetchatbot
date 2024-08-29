@@ -9,10 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatPopup = document.getElementById('chatPopup');
   const chatIcon = document.getElementById('chat-icon');
   const closeIcon = document.getElementById('close-icon'); 
+  const userContainer = document.getElementById("user-container");
+  const chatContainer = document.getElementById("chat-container");
   const loginBtn = document.getElementById("login-btn");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
   const errorMessage = document.getElementById("error-message");
+  const addUser = document.getElementById("add-user");
   const logoutBtn = document.getElementById("logout-btn");
 
   // Check if user is already logged in
@@ -30,12 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
   loginBtn.addEventListener("click", () => {
     const enteredUsername = usernameInput.value;
     const enteredPassword = passwordInput.value;
-
+  
     // Show the spinner and hide the button text
     loginBtn.classList.add("loading");
     loginBtn.disabled = true;
     errorMessage.textContent = "";
-
+  
     fetch("http://127.0.0.1:8000/validate_credentials", {
       method: "POST",
       headers: {
@@ -48,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Hide the spinner and show the button text
       loginBtn.classList.remove("loading");
       loginBtn.disabled = false;
-
+  
       if (data.success) {
         localStorage.setItem("loggedInUser", enteredUsername);
         localStorage.setItem("userPassword", enteredPassword); // Save the password in local storage
@@ -57,6 +60,13 @@ document.addEventListener("DOMContentLoaded", () => {
         headerContainer.style.display = "flex";
         chatIcon.style.display = "block"; // Ensure chatIcon is displayed initially after login
         closeIcon.style.display = "none";
+  
+        // Check the message in the response
+        if (data.message === "Admin logged In") {
+          document.getElementById("user-anchor").style.display = "block";
+        } else {
+          document.getElementById("user-anchor").style.display = "none";
+        }
       } else {
         errorMessage.textContent = "Invalid username or password.";
       }
@@ -64,12 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(error => {
       console.error("Error:", error);
       errorMessage.textContent = "An error occurred. Please try again.";
-
+  
       // Hide the spinner and show the button text
       loginBtn.classList.remove("loading");
       loginBtn.disabled = false;
     });
   });
+  
   
   const apiUrl = "https://analytics.logisticsstudio.com/api/v1/security";
   
@@ -256,9 +267,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
       // Helper function to format a single dictionary
       const formatMessage = (messageObj) => {
-        return Object.entries(messageObj).map(
-          ([key, value]) => `<strong>${key}</strong>: ${value}`
-        ).join("<br>");
+        return Object.entries(messageObj)
+          .map(([key, value]) => `<strong>${key}</strong>: ${value}`)
+          .join("<br>");
       };
     
       let formattedMessage;
@@ -266,12 +277,14 @@ document.addEventListener("DOMContentLoaded", () => {
     
       if (Array.isArray(data.message)) {
         // If data.message is an array, format each dictionary and join them
-        formattedMessage = data.message.map((messageObj) => {
-          if (messageObj.error) {
-            containsError = true;
-          }
-          return formatMessage(messageObj);
-        }).join("<br><br>");
+        formattedMessage = data.message
+          .map((messageObj) => {
+            if (messageObj.error) {
+              containsError = true;
+            }
+            return formatMessage(messageObj);
+          })
+          .join("<br><br>");
       } else {
         // If data.message is a single dictionary, format it directly
         const messageObj = JSON.parse(data.message);
@@ -295,25 +308,54 @@ document.addEventListener("DOMContentLoaded", () => {
         const idLink = document.createElement("a");
         idLink.href = "#";
         idLink.textContent = ` ${data.dashboardData.dashboardName}`;
-        idLink.onclick = function() {
+        idLink.onclick = function () {
           embedSupersetDashboard(data.dashboardData.dashboardID);
           const dashboard = document.getElementById("dashboard");
           dashboard.style.display = "block";
         };
     
         idPara.appendChild(idLink);
-    
         messageElem.appendChild(idPara);
+
+        chatbox.appendChild(messageElem);
+    
+        // Display interactive suggestions if they exist
+        if (data.dashboardData.suggestions) {
+          const suggestions = data.dashboardData.suggestions;
+    
+          // Create a container for suggestions
+          const suggestionContainer = document.createElement("div");
+          suggestionContainer.classList.add("suggestions");
+    
+          // Add each suggestion as a clickable button
+          suggestions.forEach((suggestion) => {
+            const suggestionElem = document.createElement("button");
+            suggestionElem.classList.add("suggestion");
+            suggestionElem.textContent = suggestion;
+    
+            // Add click event to populate input and send the message
+            suggestionElem.addEventListener("click", () => {
+              document.getElementById("user-input").value = suggestion;
+              sendMessage();
+              hideGreetingAndSuggestions(); // Hide suggestions after user clicks on a suggestion
+            });
+    
+            suggestionContainer.appendChild(suggestionElem);
+          });
+    
+          //messageElem.appendChild(suggestionContainer);
+          chatbox.appendChild(suggestionContainer);
+        }
       }
     
       // Append the message container to the chatbox
-      chatbox.appendChild(messageElem);
+      //chatbox.appendChild(messageElem);
     
       // Scroll to the bottom of the chatbox
       chatbox.scrollTop = chatbox.scrollHeight;
     }
+       
     
-  
     function showLoadingDots() {
       const chatbox = document.getElementById("chatbox");
       const loadingDots = document.createElement("div");
@@ -364,6 +406,46 @@ document.addEventListener("DOMContentLoaded", () => {
           closeIcon.style.display = 'none';
       }
     };
+
+    document.getElementById('add-user').addEventListener('click', function() {
+      // Hide chat header, chatbox, and user input container
+      document.querySelector('.chat-header').style.display = 'none';
+      document.getElementById('chatbox').style.display = 'none';
+      document.getElementById('user-input-container').style.display = 'none';
+
+      // Show the add user section
+      document.getElementById('add-user-section').style.display = 'block';
+  });
+
+  document.getElementById('create-user').addEventListener('click', function() {
+    const username = document.getElementById('new-username').value.trim();
+    const email = document.getElementById('new-email').value.trim();
+    const messageElement = document.getElementById('message');
+
+    if (username === "" || email === "") {
+        // Display an error message if inputs are empty
+        messageElement.textContent = "Please enter both username and email.";
+        messageElement.style.color = "red";
+    } else {
+      // Display success message
+      messageElement.textContent = "User created successfully.";
+      messageElement.style.color = "blue";
+
+      // After a short delay, hide the add user section and show chat elements
+      setTimeout(function() {
+          document.getElementById('add-user-section').style.display = 'none';
+          document.querySelector('.chat-header').style.display = 'flex';
+          document.getElementById('chatbox').style.display = 'block';
+          document.getElementById('user-input-container').style.display = 'flex';
+
+          // Clear the input fields and message
+          document.getElementById('new-username').value = "";
+          document.getElementById('new-email').value = "";
+          messageElement.textContent = "";
+      }, 1000); // Adjust the delay time as needed
+    }
+  });
+
 
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");

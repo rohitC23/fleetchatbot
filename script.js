@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatPopup = document.getElementById('chatPopup');
   const chatIcon = document.getElementById('chat-icon');
   const closeIcon = document.getElementById('close-icon'); 
-  const userContainer = document.getElementById("user-container");
-  const chatContainer = document.getElementById("chat-container");
   const loginBtn = document.getElementById("login-btn");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
@@ -225,22 +223,29 @@ document.addEventListener("DOMContentLoaded", () => {
     function sendMessage() {
       const userInput = document.getElementById("user-input").value;
       if (userInput.trim() === "") return;
+    
       displayInputMessage(userInput, "user");
       document.getElementById("user-input").value = "";
       showLoadingDots();
-  
+    
       const loggedInUser = localStorage.getItem("loggedInUser");
       const userPassword = localStorage.getItem("userPassword");
-  
+    
+      // Remove the suggestion container if it exists
+      const suggestionContainer = document.querySelector(".suggestions");
+      if (suggestionContainer) {
+        suggestionContainer.remove();
+      }
+    
       fetch("http://127.0.0.1:8000/get_response", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           question: userInput,
           username: loggedInUser,
-          password: userPassword
+          password: userPassword,
         }),
       })
         .then((response) => response.json())
@@ -253,7 +258,8 @@ document.addEventListener("DOMContentLoaded", () => {
           hideLoadingDots();
           console.error("Error:", error);
         });
-    }
+    }   
+    
   
     function displayMessage(data, sender) {
       const chatbox = document.getElementById("chatbox");
@@ -468,8 +474,6 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       }
     });
-  
-
 
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");

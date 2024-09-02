@@ -306,6 +306,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Append the span element to the message container
       messageElem.appendChild(messageSpan);
     
+      // Append the message element to the chatbox
+      chatbox.appendChild(messageElem);
+    
       // Check if there is no error and dashboard data is provided
       if (!containsError && data.dashboardData && data.dashboardData.dashboardID) {
         const idPara = document.createElement("p");
@@ -342,22 +345,22 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("user-input").value = suggestion;
               sendMessage();
               if (chatbox.contains(suggestionContainer)) {
-                chatbox.removeChild(suggestionContainer); // Remove the suggestion container after click
-              }
+          chatbox.removeChild(suggestionContainer); // Remove the suggestion container after click
+          }
             });
     
             suggestionContainer.appendChild(suggestionElem);
           });
     
+          // Append the suggestion container to the chatbox after the message element
           chatbox.appendChild(suggestionContainer);
         }
       }
     
-      chatbox.appendChild(messageElem);
-    
       // Scroll to the bottom of the chatbox
       chatbox.scrollTop = chatbox.scrollHeight;
-    }      
+    }
+    
     
     function showLoadingDots() {
       const chatbox = document.getElementById("chatbox");
@@ -475,6 +478,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   
+
+
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       localStorage.removeItem("userPassword");

@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let containsError = false;
     
       if (Array.isArray(data.message)) {
-        // If data.message is an array, format each dictionary and join them
+        // If data.message is an array, format each dictionary and check for errors
         formattedMessage = data.message
           .map((messageObj) => {
             if (messageObj.error) {
@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
           })
           .join("<br><br>");
       } else {
-        // If data.message is a single dictionary, format it directly
+        // If data.message is a single dictionary, format it directly and check for errors
         const messageObj = JSON.parse(data.message);
         if (messageObj.error) {
           containsError = true;
@@ -306,8 +306,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Append the span element to the message container
       messageElem.appendChild(messageSpan);
     
-      // Check if dashboard data is provided and there is no error in the message
-      if (data.dashboardData && data.dashboardData.dashboardID && !containsError) {
+      // Check if there is no error and dashboard data is provided
+      if (!containsError && data.dashboardData && data.dashboardData.dashboardID) {
         const idPara = document.createElement("p");
         idPara.classList.add("dashboard-id");
     
@@ -322,8 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
         idPara.appendChild(idLink);
         messageElem.appendChild(idPara);
-    
-        chatbox.appendChild(messageElem);
     
         // Display interactive suggestions if they exist
         if (data.dashboardData.suggestions) {
@@ -343,7 +341,9 @@ document.addEventListener("DOMContentLoaded", () => {
             suggestionElem.addEventListener("click", () => {
               document.getElementById("user-input").value = suggestion;
               sendMessage();
-              chatbox.removeChild(suggestionContainer); // Remove the suggestion container after click
+              if (chatbox.contains(suggestionContainer)) {
+                chatbox.removeChild(suggestionContainer); // Remove the suggestion container after click
+              }
             });
     
             suggestionContainer.appendChild(suggestionElem);
@@ -353,11 +353,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     
+      chatbox.appendChild(messageElem);
+    
       // Scroll to the bottom of the chatbox
       chatbox.scrollTop = chatbox.scrollHeight;
-    }
-    
-       
+    }      
     
     function showLoadingDots() {
       const chatbox = document.getElementById("chatbox");
@@ -474,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       }
     });
-
+  
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       localStorage.removeItem("userPassword");

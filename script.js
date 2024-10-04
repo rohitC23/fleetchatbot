@@ -54,7 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.success) {
         localStorage.setItem("loggedInUser", enteredUsername);
-        localStorage.setItem("userPassword", enteredPassword); // Save the password in local storage
+        localStorage.setItem("userPassword", enteredPassword);
+        localStorage.setItem("userRole", data.role); // Save the role to localStorage
         loginContainer.style.display = "none";
         floatingIcon.style.display = "flex";
         headerContainer.style.display = "flex";
@@ -221,8 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("user-input").value = "";
       showLoadingDots();
   
-      const loggedInUser = localStorage.getItem("loggedInUser");
-      const userPassword = localStorage.getItem("userPassword");
+      const userRole = localStorage.getItem("userRole");
   
       fetch("http://127.0.0.1:8000/get_response", {
         method: "POST",
@@ -231,8 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({ 
           question: userInput,
-          username: loggedInUser,
-          password: userPassword
+          role: userRole
         }),
       })
         .then((response) => response.json())
@@ -267,23 +266,19 @@ document.addEventListener("DOMContentLoaded", () => {
       let formattedMessage;
       let containsError = false;
     
-      if (Array.isArray(data.message)) {
+      // Check if the data contains an error like "Access Error"
+      if (data["Access Error"]) {
+        // If there's an access error, display the error message
+        formattedMessage = `<strong>Access Error</strong>: ${data["Access Error"]}`;
+        containsError = true;
+      } else if (Array.isArray(data.message)) {
         // If data.message is an array, format each dictionary and join them
         formattedMessage = data.message
-          .map((messageObj) => {
-            if (messageObj.error) {
-              containsError = true;
-            }
-            return formatMessage(messageObj);
-          })
+          .map((messageObj) => formatMessage(messageObj))
           .join("<br><br>");
-      } else {
+      } else if (data.message) {
         // If data.message is a single dictionary, format it directly
-        const messageObj = JSON.parse(data.message);
-        if (messageObj.error) {
-          containsError = true;
-        }
-        formattedMessage = formatMessage(messageObj);
+        formattedMessage = formatMessage(data.message);
       }
     
       // Set the inner HTML of the span element with the formatted message
@@ -292,8 +287,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Append the span element to the message container
       messageElem.appendChild(messageSpan);
     
-      // Check if dashboard data is provided and there is no error in the message
-      if (data.dashboardData && data.dashboardData.dashboardID && !containsError) {
+      // If there's no error, check and display dashboard data
+      if (!containsError && data.dashboardData && data.dashboardData.dashboardID) {
         const idPara = document.createElement("p");
         idPara.classList.add("dashboard-id");
     
@@ -308,44 +303,15 @@ document.addEventListener("DOMContentLoaded", () => {
     
         idPara.appendChild(idLink);
         messageElem.appendChild(idPara);
-
-        chatbox.appendChild(messageElem);
-    
-        // Display interactive suggestions if they exist
-        if (data.dashboardData.suggestions) {
-          const suggestions = data.dashboardData.suggestions;
-    
-          // Create a container for suggestions
-          const suggestionContainer = document.createElement("div");
-          suggestionContainer.classList.add("suggestions");
-    
-          // Add each suggestion as a clickable button
-          suggestions.forEach((suggestion) => {
-            const suggestionElem = document.createElement("button");
-            suggestionElem.classList.add("suggestion");
-            suggestionElem.textContent = suggestion;
-    
-            // Add click event to populate input and send the message
-            suggestionElem.addEventListener("click", () => {
-              document.getElementById("user-input").value = suggestion;
-              sendMessage();
-              hideGreetingAndSuggestions(); // Hide suggestions after user clicks on a suggestion
-            });
-    
-            suggestionContainer.appendChild(suggestionElem);
-          });
-    
-          //messageElem.appendChild(suggestionContainer);
-          chatbox.appendChild(suggestionContainer);
-        }
       }
     
-      // Append the message container to the chatbox
-      //chatbox.appendChild(messageElem);
+      // Append the message element to the chatbox
+      chatbox.appendChild(messageElem);
     
       // Scroll to the bottom of the chatbox
       chatbox.scrollTop = chatbox.scrollHeight;
     }
+    
        
     
     function showLoadingDots() {
@@ -441,4 +407,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
   });  
-  

@@ -487,3 +487,18 @@ input {
   cursor: pointer;
   position: relative;
 }
+
+#exit {
+  background-color: #4D5FD1;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  margin: 20px 0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}

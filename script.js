@@ -376,21 +376,69 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById('create-user').addEventListener('click', function() {
-      // Hide the add user section
-      document.getElementById('add-user-section').style.display = 'none';
+    // Get the values from the input fields
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-email').value.trim();
 
-      // Show chat header, chatbox, and user input container
-      document.querySelector('.chat-header').style.display = 'flex';
-      document.getElementById('chatbox').style.display = 'block';
-      document.getElementById('user-input-container').style.display = 'flex';
+    // Check if both fields are filled
+    if (!username || !password) {
+        alert('Please fill in both the username and password fields.');
+        return; // Stop the function if fields are empty
+    }
 
-      // Handle user creation logic here if needed
-      // const username = document.getElementById('new-username').value;
-      // const email = document.getElementById('new-email').value;
-      // console.log(`New user created: ${username}, ${email}`);
-  });
+    // Hide the add user section
+    document.getElementById('add-user-section').style.display = 'none';
 
+    // Show chat header, chatbox, and user input container
+    document.querySelector('.chat-header').style.display = 'flex';
+    document.getElementById('chatbox').style.display = 'block';
+    document.getElementById('user-input-container').style.display = 'flex';
 
+    // Get the admin credentials from local storage
+    const adminUser = localStorage.getItem("loggedInUser");
+    const adminPassword = localStorage.getItem("userPassword");
+
+    // Prepare the API body
+    const requestBody = {
+        "username": adminUser,
+        "password": adminPassword,
+        "sub_user": username,
+        "sub_password": password
+    };
+
+    // Call the API to create the user
+    fetch('http://127.0.0.1:8000/add_user', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to create user');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('User created successfully:', data);
+        // Further actions (e.g., display a success message)
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Display an error message to the user
+    });
+});
+
+document.getElementById('exit').addEventListener('click', function() {
+  // Hide the add user section
+  document.getElementById('add-user-section').style.display = 'none';
+
+  // Show chat header, chatbox, and user input container
+  document.querySelector('.chat-header').style.display = 'flex';
+  document.getElementById('chatbox').style.display = 'block';
+  document.getElementById('user-input-container').style.display = 'flex';
+});
 
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");

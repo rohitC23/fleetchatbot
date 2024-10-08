@@ -473,43 +473,19 @@ document.getElementById('search-btn').addEventListener('click', function() {
   if (!ordernumber) {
       alert('Please fill the order number field');
       return; // Stop the function if the field is empty
-  }
-
-  // Hide input and buttons
-  document.getElementById('order-number').style.display = 'none';
-  document.getElementById('search-btn').style.display = 'none';
-  document.getElementById('exit-scrape').style.display = 'none';
+  }  
 
   // Create and show the loading effect
   const loadingDiv = document.createElement('div');
   loadingDiv.id = 'loading';
   loadingDiv.innerHTML = `
-    <p>Loading, please wait...</p>
-    <div class="spinner"></div>
+    <p style="font-size: 18px; font-weight: bold; color: #007BFF; text-align: center; animation: blink 1.5s linear infinite;">
+      Loading, please wait...
+    </p>
   `;
 
   // Append the loading element to the web-scrape-section
   document.getElementById('web-scrape-section').appendChild(loadingDiv);
-
-  // Add CSS for the spinner and the animation
-  const style = document.createElement('style');
-  style.innerHTML = `
-    .spinner {
-      margin: 10px auto;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #000;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  `;
-  document.head.appendChild(style);
 
   // Prepare the API body
   const requestBody = {
@@ -532,6 +508,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
   })
   .then(data => {
       console.log('Fetched Data successfully:', data);
+      // Hide input and buttons
+      document.getElementById('order-number').style.display = 'none';
+      document.getElementById('search-btn').style.display = 'none';
+      document.getElementById('exit-scrape').style.display = 'none';
 
       // Remove the loading effect
       document.getElementById('loading').remove();
@@ -575,7 +555,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
   });
 });
 
-
 document.getElementById('exit').addEventListener('click', function() {
   // Hide the add user section
   document.getElementById('add-user-section').style.display = 'none';
@@ -584,6 +563,10 @@ document.getElementById('exit').addEventListener('click', function() {
   document.querySelector('.chat-header').style.display = 'flex';
   document.getElementById('chatbox').style.display = 'block';
   document.getElementById('user-input-container').style.display = 'flex';
+
+  // Reset the input fields
+  document.getElementById('new-username').value = '';
+  document.getElementById('new-email').value = '';
 });
 
 document.getElementById('exit-scrape').addEventListener('click', function() {
@@ -594,6 +577,7 @@ document.getElementById('exit-scrape').addEventListener('click', function() {
   document.querySelector('.chat-header').style.display = 'flex';
   document.getElementById('chatbox').style.display = 'block';
   document.getElementById('user-input-container').style.display = 'flex';
+  document.getElementById('order-number').value = '';
 });
 
     logoutBtn.addEventListener("click", () => {

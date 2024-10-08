@@ -306,7 +306,7 @@ nav .logo {
   display: block;
 }
 
-#logout-btn {  
+#logout-btn, #web-scrape {  
   border: none;
   background: none;
   padding: 0px;
@@ -451,7 +451,7 @@ input {
   border: 1px solid grey;
 }
 
-#add-user-section {
+#add-user-section, #web-scrape-section {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -465,7 +465,7 @@ input {
   background-color: #fff;
 }
 
-#add-user-section input {
+#add-user-section input, #web-scrape-section input{
   margin: 5px 0;
   padding: 10px;
   border-radius: 5px;
@@ -473,7 +473,7 @@ input {
   width: 93%
 }
 
-#create-user {
+#create-user, #search-btn {
   background-color: #4D5FD1;
   color: white;
   border: none;
@@ -488,7 +488,7 @@ input {
   position: relative;
 }
 
-#exit {
+#exit, #exit-scrape, #back-btn {
   background-color: #4D5FD1;
   color: white;
   border: none;

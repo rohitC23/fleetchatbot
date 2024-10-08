@@ -375,6 +375,16 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('add-user-section').style.display = 'block';
   });
 
+  document.getElementById('web-scrape').addEventListener('click', function() {
+    // Hide chat header, chatbox, and user input container
+    document.querySelector('.chat-header').style.display = 'none';
+    document.getElementById('chatbox').style.display = 'none';
+    document.getElementById('user-input-container').style.display = 'none';
+
+    // Show the add user section
+    document.getElementById('web-scrape-section').style.display = 'block';
+  });
+
   document.getElementById('create-user').addEventListener('click', function() {
     // Get the values from the input fields
     const username = document.getElementById('new-username').value.trim();
@@ -386,24 +396,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return; // Stop the function if fields are empty
     }
 
-    // Hide the add user section
-    document.getElementById('add-user-section').style.display = 'none';
-
-    // Show chat header, chatbox, and user input container
-    document.querySelector('.chat-header').style.display = 'flex';
-    document.getElementById('chatbox').style.display = 'block';
-    document.getElementById('user-input-container').style.display = 'flex';
-
     // Get the admin credentials from local storage
     const adminUser = localStorage.getItem("loggedInUser");
     const adminPassword = localStorage.getItem("userPassword");
+    const adminRole = localStorage.getItem("userRole");
 
     // Prepare the API body
     const requestBody = {
         "username": adminUser,
         "password": adminPassword,
         "sub_user": username,
-        "sub_password": password
+        "sub_password": password,
+        "role": adminRole
     };
 
     // Call the API to create the user
@@ -421,18 +425,170 @@ document.addEventListener("DOMContentLoaded", () => {
         return response.json();
     })
     .then(data => {
-        console.log('User created successfully:', data);
-        // Further actions (e.g., display a success message)
+        //console.log('User created successfully:', data);
+
+        // Create a <p> element to display the success message with styling
+        const successMessage = document.createElement('p');
+        successMessage.textContent = data.success; // Assuming `data.success` contains the success message
+        successMessage.style.color = 'green';
+        successMessage.style.backgroundColor = '#e6ffe6';  // Light green background
+        successMessage.style.padding = '10px';
+        successMessage.style.borderRadius = '5px';
+        successMessage.style.textAlign = 'center';
+        successMessage.style.fontSize = '16px';
+
+        // Append the <p> element to the 'add-user-section'
+        const addUserSection = document.getElementById('add-user-section');
+        addUserSection.appendChild(successMessage);
+
+        // Set a timer to hide the success message, change sections, and reset fields after 3 seconds
+        setTimeout(() => {
+            // Hide the success message
+            addUserSection.removeChild(successMessage);
+
+            // Hide the add user section
+            document.getElementById('add-user-section').style.display = 'none';
+
+            // Show chat header, chatbox, and user input container
+            document.querySelector('.chat-header').style.display = 'flex';
+            document.getElementById('chatbox').style.display = 'block';
+            document.getElementById('user-input-container').style.display = 'flex';
+
+            // Reset the input fields
+            document.getElementById('new-username').value = '';
+            document.getElementById('new-email').value = '';
+        }, 3000); // 3000 milliseconds = 3 seconds
     })
     .catch(error => {
         console.error('Error:', error);
-        // Display an error message to the user
+        alert('Error creating user. Please try again.');
     });
 });
+
+document.getElementById('search-btn').addEventListener('click', function() {
+  // Get the values from the input fields
+  const ordernumber = document.getElementById('order-number').value.trim();
+
+  // Check if the order number field is filled
+  if (!ordernumber) {
+      alert('Please fill the order number field');
+      return; // Stop the function if the field is empty
+  }
+
+  // Hide input and buttons
+  document.getElementById('order-number').style.display = 'none';
+  document.getElementById('search-btn').style.display = 'none';
+  document.getElementById('exit-scrape').style.display = 'none';
+
+  // Create and show the loading effect
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'loading';
+  loadingDiv.innerHTML = `
+    <p>Loading, please wait...</p>
+    <div class="spinner"></div>
+  `;
+
+  // Append the loading element to the web-scrape-section
+  document.getElementById('web-scrape-section').appendChild(loadingDiv);
+
+  // Add CSS for the spinner and the animation
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .spinner {
+      margin: 10px auto;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #000;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Prepare the API body
+  const requestBody = {
+      "order_number": ordernumber
+  };
+
+  // Call the API to get the order status
+  fetch('http://127.0.0.1:5000/order_status', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Failed to fetch order status');
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log('Fetched Data successfully:', data);
+
+      // Remove the loading effect
+      document.getElementById('loading').remove();
+      
+      // Create a new div with the fetched data
+      const dataDiv = document.createElement('div');
+      dataDiv.id = 'web-data';
+      dataDiv.innerHTML = `
+        <p><strong>Flow Name:</strong> ${data.flow_name}</p>
+        <p><strong>Tracking Info:</strong> ${data.tracking_info}</p>
+      `;
+      
+      // Append the new div to the web-scrape-section
+      document.getElementById('web-scrape-section').appendChild(dataDiv);
+
+      // Create a new button
+      const newButton = document.createElement('button');
+      newButton.textContent = 'Back'; // Modify text as needed
+      newButton.id = 'back-btn';
+      
+      // Append the button below the div
+      document.getElementById('web-scrape-section').appendChild(newButton);
+
+      newButton.addEventListener('click', function() {
+        document.getElementById('web-data').style.display = 'none';
+        document.getElementById('back-btn').style.display = 'none';
+        document.getElementById('order-number').style.display = 'flex';
+        document.getElementById('search-btn').style.display = 'flex';
+        document.getElementById('exit-scrape').style.display = 'flex';
+        document.getElementById('order-number').value = '';
+      });
+  })
+  .catch(error => {
+      console.error('Error:', error);
+      
+      // Remove the loading effect if error occurs
+      document.getElementById('loading').remove();
+      
+      // Display an error message to the user
+      alert('Error fetching data. Please try again later.');
+  });
+});
+
 
 document.getElementById('exit').addEventListener('click', function() {
   // Hide the add user section
   document.getElementById('add-user-section').style.display = 'none';
+
+  // Show chat header, chatbox, and user input container
+  document.querySelector('.chat-header').style.display = 'flex';
+  document.getElementById('chatbox').style.display = 'block';
+  document.getElementById('user-input-container').style.display = 'flex';
+});
+
+document.getElementById('exit-scrape').addEventListener('click', function() {
+  // Hide the add user section
+  document.getElementById('web-scrape-section').style.display = 'none';
 
   // Show chat header, chatbox, and user input container
   document.querySelector('.chat-header').style.display = 'flex';
@@ -455,3 +611,4 @@ document.getElementById('exit').addEventListener('click', function() {
     });
   
   });  
+  
